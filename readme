@@ -1,0 +1,12 @@
+load-and-replace will:
+
+Take a sgid-internal feature class name (ie SGID.OWNER.FeatureClass) as input.
+Parse the name to get the corresponding connection files in L:\sgid_to_agol\ConnectionFilesSGID
+Check if the input sgid-internal connection file exists
+Check if the output sgid10 connection file exists
+Check if the sgid-internal input feature class exists
+Copy the feature class to sgid10 named fc_temp
+Run a function to delete the table locks on the old sgid10 feature class that's being replaced
+Delete the sgid10 feature class that's being replaced
+Rename the new copied feature class from fc_temp to fc
+Update the privileges for the agrc and SearchAPI users
