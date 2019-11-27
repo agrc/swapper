@@ -28,8 +28,8 @@ def delete_locks(fc_owner, fc_name):
 
 def copy_and_replace(fc):
 
-    sgid_connections_fldr = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID_internal'
-    sgid10_connections_fldr = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID10'
+    sgid_connections_path = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID_internal'
+    sgid10_connections_path = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID10'
 
     # fc_list = open(fc_list_txt, 'r')
     # for fc in fc_list:
@@ -40,22 +40,22 @@ def copy_and_replace(fc):
     fc_name = fc.split('.')[2].strip()
 
     sgid_connection_file = f'SGID_{owner.title()}.sde'
-    if not path.exists(os.path.join(sgid_connections_fldr, sgid_connection_file)):
+    if not path.exists(os.path.join(sgid_connections_path, sgid_connection_file)):
         print(f'{sgid_connection_file} does not exist')
 
 
     sgid10_connection_file = f'SGID10_{owner.title()}.sde'
-    if not path.exists(os.path.join(sgid10_connections_fldr, sgid10_connection_file)):
+    if not path.exists(os.path.join(sgid10_connections_path, sgid10_connection_file)):
         print(f'{sgid10_connection_file} does not exist')
 
 
-    with arcpy.EnvManager(workspace=os.path.join(sgid_connections_fldr, sgid_connection_file)):
+    with arcpy.EnvManager(workspace=os.path.join(sgid_connections_path, sgid_connection_file)):
         if not arcpy.Exists(fc):
             print(f'{fc} does not exist in Internal SGID')
             return None
 
 
-    with arcpy.EnvManager(workspace=os.path.join(sgid10_connections_fldr, sgid10_connection_file)):
+    with arcpy.EnvManager(workspace=os.path.join(sgid10_connections_path, sgid10_connection_file)):
 
         output_fc_sgid10 = f'{fc_name}_temp'
 
@@ -63,7 +63,7 @@ def copy_and_replace(fc):
             print(f'{output_fc_sgid10} already exists in SGID10')
             return None
 
-        input_fc_sgid = os.path.join(sgid_connections_fldr, sgid_connection_file, fc_name)
+        input_fc_sgid = os.path.join(sgid_connections_path, sgid_connection_file, fc_name)
         print(input_fc_sgid)
 
         try:
@@ -100,4 +100,3 @@ def copy_and_replace(fc):
 
 
 copy_and_replace('SGID.HEALTH.SmallAreas_ObesityAndActivity')
-
