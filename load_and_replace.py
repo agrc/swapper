@@ -15,12 +15,20 @@ Arguments:
 import os
 from docopt import docopt
 from textwrap import dedent
+from dotenv import load_dotenv
 
 import arcpy
+load_dotenv()
 
 
 def delete_locks(fc_owner, fc_name):
-    dbo_owner = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID10\SGID10_sde.sde'
+    dbo_owner = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', 'SGID10_sde.sde')
+
+    if not os.path.exists(dbo_owner):
+        print(f'{dbo_owner} does not exist')
+
+        return
+
     db_connect = arcpy.ArcSDESQLExecute(dbo_owner)
 
     sql = dedent(
@@ -44,23 +52,17 @@ def delete_locks(fc_owner, fc_name):
 
 
 def copy_and_replace(fc):
-    sgid_connections_path = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID_internal'
-    sgid10_connections_path = r'L:\sgid_to_agol\ConnectionFilesSGID\SGID10'
-
     owner = fc.split('.')[1].upper()
     fc_name = fc.split('.')[2].strip()
 
-    sgid10_connection_file = f'SGID10_{owner.title()}.sde'
-    sgid_connection_file = f'SGID_{owner.title()}.sde'
-
-    internal = os.path.join(sgid_connections_path, sgid_connection_file)
-    sgid10 = os.path.join(sgid10_connections_path, sgid10_connection_file)
+    internal = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID_internal', f'SGID10_{owner.title()}.sde')
+    sgid10 = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', f'SGID_{owner.title()}.sde')
 
     if not os.path.exists(internal):
-        print(f'{sgid_connection_file} does not exist')
+        print(f'{internal} does not exist')
 
     if not os.path.exists(sgid10):
-        print(f'{sgid10_connection_file} does not exist')
+        print(f'{sgid10} does not exist')
 
     with arcpy.EnvManager(workspace=internal):
         if not arcpy.Exists(fc):
@@ -76,7 +78,7 @@ def copy_and_replace(fc):
 
             return None
 
-        input_fc_sgid = os.path.join(sgid_connections_path, sgid_connection_file, fc_name)
+        input_fc_sgid = os.path.join(internal, fc_name)
         print(input_fc_sgid)
 
         try:
@@ -94,7 +96,7 @@ def copy_and_replace(fc):
             arcpy.management.Delete(fc_name)
             print(f'deleted {sgid10_connection_file}\\{fc_name}')
         except:
-            print(f'could not delete {sgid10_connection_file}\\{fc_name}')
+            print(f'could not delete {sgid10}\\{fc_name}')
 
         try:
             renamed_fc_sgid10 = output_fc_sgid10.strip('_temp')
@@ -115,7 +117,6 @@ def main():
     '''Main entry point for program. Parse arguments and route to top level methods.
     '''
     args = docopt(__doc__, version='1.0.0')
-    print(args)
 
     if args['<table>']:
         print(f'updating single table: {args["<table>"]}')
