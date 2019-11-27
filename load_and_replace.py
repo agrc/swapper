@@ -11,11 +11,13 @@ Arguments:
 '''
 
 import os
-from docopt import docopt
 from textwrap import dedent
+
+from docopt import docopt
 from dotenv import load_dotenv
 
 import arcpy
+
 load_dotenv()
 
 
