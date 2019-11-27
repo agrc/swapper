@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# * coding: utf8 *
+'''
+load_and_replace.py
+A module that replaces data with minimal interruption
+'''
+
+
 import os
 from textwrap import dedent
 
