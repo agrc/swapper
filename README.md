@@ -1,6 +1,6 @@
 # load-and-replace
 
-This tool will:
+## This tool will
 
 1. Take a sgid-internal feature class name (ie SGID.OWNER.FeatureClass) as input.
 1. Parse the name to get the corresponding connection files in L:\sgid_to_agol\ConnectionFilesSGID
@@ -12,3 +12,14 @@ This tool will:
 1. Delete the sgid10 feature class that's being replaced
 1. Rename the new copied feature class from fc_temp to fc
 1. Update the privileges for the agrc and SearchAPI users
+
+## Setup
+
+1. Update the `.env` file to point to the sde files necessary
+1. Install the dependencies into a conda environment with arcpy
+   - `pip install -r requirements.txt`
+
+## Usage
+
+- Call the cli with the tables
+  - `python load_and_replace swap sgid.health.health_areas sgid.boundaries.counties`
