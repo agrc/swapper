@@ -4,12 +4,10 @@
 swapper
 
 Usage:
-  swapper swap <table>
-  swapper swap --from-file=<path>
+  swapper swap <tables>...
 
 Arguments:
   table: the fully qualified table name DB.SCHEMA.Table e.g., SGID.HEALTH.SmallAreas_ObesityAndActivity
-  path: a path to a .csv file of fully qualified table names
 '''
 
 import os
@@ -118,15 +116,10 @@ def main():
     '''
     args = docopt(__doc__, version='1.0.0')
 
-    if args['<table>']:
-        print(f'updating single table: {args["<table>"]}')
-        copy_and_replace(args["<table>"])
-
-    if args['--from-file']:
-        print(f'updating files from: {args["--from-file"]}')
-        #: check if csv exists
-        #: read csv
-        #: loop over calling copy and replace
+    if args['<tables>']:
+        for table in args['<tables>']:
+            print(f'updating single table: {table}')
+            copy_and_replace(table)
 
 
 if __name__ == '__main__':
