@@ -12,7 +12,6 @@ Arguments:
   path: a path to a .csv file of fully qualified table names
 '''
 
-
 import os
 from docopt import docopt
 from textwrap import dedent
@@ -29,7 +28,8 @@ def delete_locks(fc_owner, fc_name):
         WHERE SDE_ID IN(SELECT SDE_ID FROM sde.SDE_table_locks
         WHERE registration_id = (SELECT registration_id FROM sde.SDE_table_registry
         WHERE table_name = '{fc_name}' AND owner = UPPER('{fc_owner}')));
-        ''')
+    '''
+    )
 
     db_return = db_connect.execute(sql)
 
@@ -39,7 +39,7 @@ def delete_locks(fc_owner, fc_name):
         return
 
     for user in db_return:
-        print (f'deleted lock {user[0]}')
+        print(f'deleted lock {user[0]}')
         arcpy.DisconnectUser(dbo_owner, user[0])
 
 
@@ -83,32 +83,32 @@ def copy_and_replace(fc):
             arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
             print(f'copied {input_fc_sgid} to {output_fc_sgid10}')
         except:
-            print (f'could not copy to sgid10')
+            print(f'could not copy to sgid10')
 
         try:
             delete_locks(owner, fc_name)
         except:
-            print (f'could not delete table locks')
+            print(f'could not delete table locks')
 
         try:
             arcpy.management.Delete(fc_name)
-            print (f'deleted {sgid10_connection_file}\\{fc_name}')
+            print(f'deleted {sgid10_connection_file}\\{fc_name}')
         except:
-            print (f'could not delete {sgid10_connection_file}\\{fc_name}')
+            print(f'could not delete {sgid10_connection_file}\\{fc_name}')
 
         try:
             renamed_fc_sgid10 = output_fc_sgid10.strip('_temp')
-            print (f'renamed {output_fc_sgid10}')
+            print(f'renamed {output_fc_sgid10}')
             arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
         except:
-            print (f'could not rename {output_fc_sgid10}')
+            print(f'could not rename {output_fc_sgid10}')
 
         try:
             user_list = ['agrc', 'SearchAPI']
             for user in user_list:
                 arcpy.management.ChangePrivileges(renamed_fc_sgid10, user, 'GRANT', 'AS_IS')
         except:
-            print (f'could not update privileges to {renamed_fc_sgid10}')
+            print(f'could not update privileges to {renamed_fc_sgid10}')
 
 
 def main():
