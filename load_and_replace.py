@@ -42,22 +42,25 @@ def copy_and_replace(fc):
     owner = fc.split('.')[1].upper()
     fc_name = fc.split('.')[2].strip()
 
-    sgid_connection_file = f'SGID_{owner.title()}.sde'
     sgid10_connection_file = f'SGID10_{owner.title()}.sde'
+    sgid_connection_file = f'SGID_{owner.title()}.sde'
 
-    if not os.path.exists(os.path.join(sgid_connections_path, sgid_connection_file)):
+    internal = os.path.join(sgid_connections_path, sgid_connection_file)
+    sgid10 = os.path.join(sgid10_connections_path, sgid10_connection_file)
+
+    if not os.path.exists(internal):
         print(f'{sgid_connection_file} does not exist')
 
-    if not os.(os.path.join(sgid10_connections_path, sgid10_connection_file)):
+    if not os.path.exists(sgid10):
         print(f'{sgid10_connection_file} does not exist')
 
-    with arcpy.EnvManager(workspace=os.path.join(sgid_connections_path, sgid_connection_file)):
+    with arcpy.EnvManager(workspace=internal):
         if not arcpy.Exists(fc):
             print(f'{fc} does not exist in Internal SGID')
 
             return None
 
-    with arcpy.EnvManager(workspace=os.path.join(sgid10_connections_path, sgid10_connection_file)):
+    with arcpy.EnvManager(workspace=sgid10):
         output_fc_sgid10 = f'{fc_name}_temp'
 
         if arcpy.Exists(output_fc_sgid10):
