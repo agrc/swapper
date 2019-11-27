@@ -72,7 +72,7 @@ def copy_and_replace(fc):
         print(input_fc_sgid)
 
         try:
-            arcpy.CopyFeatures_management(input_fc_sgid, output_fc_sgid10)
+            arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
             print(f'copied {input_fc_sgid} to {output_fc_sgid10}')
         except:
             print (f'could not copy to sgid10')
@@ -83,22 +83,22 @@ def copy_and_replace(fc):
             print (f'could not delete table locks')
 
         try:
-            arcpy.Delete_management(fc_name)
             print (f'deleted {sgid10_connection_file}\{fc_name}')
+            arcpy.management.Delete(fc_name)
         except:
             print (f'could not delete {sgid10_connection_file}\{fc_name}')
 
         try:
             renamed_fc_sgid10 = output_fc_sgid10.strip('_temp')
             print (f'renamed {output_fc_sgid10}')
-            arcpy.Rename_management(output_fc_sgid10, renamed_fc_sgid10)
+            arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
         except:
             print (f'could not rename {output_fc_sgid10}')
 
         try:
             user_list = ['agrc', 'SearchAPI']
             for user in user_list:
-                arcpy.ChangePrivileges_management(renamed_fc_sgid10, user, 'GRANT', 'AS_IS')
+                arcpy.management.ChangePrivileges(renamed_fc_sgid10, user, 'GRANT', 'AS_IS')
         except:
             print (f'could not update privileges to {renamed_fc_sgid10}')
 
