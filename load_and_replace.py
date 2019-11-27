@@ -1,8 +1,7 @@
-import arcpy
-import textwrap
-from textwrap import dedent
 import os
-from os import path
+from textwrap import dedent
+
+import arcpy
 
 
 def delete_locks(fc_owner, fc_name):
@@ -38,10 +37,10 @@ def copy_and_replace(fc):
     sgid_connection_file = f'SGID_{owner.title()}.sde'
     sgid10_connection_file = f'SGID10_{owner.title()}.sde'
 
-    if not path.exists(os.path.join(sgid_connections_path, sgid_connection_file)):
+    if not os.path.exists(os.path.join(sgid_connections_path, sgid_connection_file)):
         print(f'{sgid_connection_file} does not exist')
 
-    if not path.exists(os.path.join(sgid10_connections_path, sgid10_connection_file)):
+    if not os.(os.path.join(sgid10_connections_path, sgid10_connection_file)):
         print(f'{sgid10_connection_file} does not exist')
 
     with arcpy.EnvManager(workspace=os.path.join(sgid_connections_path, sgid_connection_file)):
