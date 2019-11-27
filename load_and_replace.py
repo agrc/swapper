@@ -1,12 +1,20 @@
 #!/usr/bin/env python
 # * coding: utf8 *
 '''
-load_and_replace.py
-A module that replaces data with minimal interruption
+swapper
+
+Usage:
+  swapper swap <table>
+  swapper swap --from-file=<path>
+
+Arguments:
+  table: the fully qualified table name DB.SCHEMA.Table e.g., SGID.HEALTH.SmallAreas_ObesityAndActivity
+  path: a path to a .csv file of fully qualified table names
 '''
 
 
 import os
+from docopt import docopt
 from textwrap import dedent
 
 import arcpy
@@ -102,4 +110,23 @@ def copy_and_replace(fc):
         except:
             print (f'could not update privileges to {renamed_fc_sgid10}')
 
-copy_and_replace('SGID.HEALTH.SmallAreas_ObesityAndActivity')
+
+def main():
+    '''Main entry point for program. Parse arguments and route to top level methods.
+    '''
+    args = docopt(__doc__, version='1.0.0')
+    print(args)
+
+    if args['<table>']:
+        print(f'updating single table: {args["<table>"]}')
+        copy_and_replace(args["<table>"])
+
+    if args['--from-file']:
+        print(f'updating files from: {args["--from-file"]}')
+        #: check if csv exists
+        #: read csv
+        #: loop over calling copy and replace
+
+
+if __name__ == '__main__':
+    main()
