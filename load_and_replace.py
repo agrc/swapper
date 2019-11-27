@@ -83,10 +83,10 @@ def copy_and_replace(fc):
             print (f'could not delete table locks')
 
         try:
-            print (f'deleted {sgid10_connection_file}\{fc_name}')
             arcpy.management.Delete(fc_name)
+            print (f'deleted {sgid10_connection_file}\\{fc_name}')
         except:
-            print (f'could not delete {sgid10_connection_file}\{fc_name}')
+            print (f'could not delete {sgid10_connection_file}\\{fc_name}')
 
         try:
             renamed_fc_sgid10 = output_fc_sgid10.strip('_temp')
