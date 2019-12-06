@@ -55,8 +55,8 @@ def copy_and_replace(fc):
     owner = fc.split('.')[1].upper()
     fc_name = fc.split('.')[2].strip()
 
-    internal = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID_internal', f'SGID10_{owner.title()}.sde')
-    sgid10 = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', f'SGID_{owner.title()}.sde')
+    internal = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID_internal', f'SGID_{owner.title()}.sde')
+    sgid10 = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', f'SGID10_{owner.title()}.sde')
 
     if not os.path.exists(internal):
         print(f'{internal} does not exist')
