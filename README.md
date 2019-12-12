@@ -15,11 +15,21 @@
 
 ## Setup
 
-1. Update the `.env` file to point to the sde files necessary
-1. Install the dependencies into a conda environment with arcpy
-   - `pip install -r requirements.txt`
+1. `git clone https://github.com/agrc/swapper`
+1. `cd swapper`
+1. From within a virtual environment that has python 3.6+: `pip install .\ -U`
+1. Set a `SWAPPER_CONNECTION_FILE_PATH` environment variable to the path to the `ConnectionFilesSGID` folder on the share.
 
 ## Usage
 
-- Call the cli with the tables
-  - `python load_and_replace swap sgid.health.health_areas sgid.boundaries.counties`
+### CLI
+
+Run `swapper` for usage information.
+
+### From within other python code
+
+```python
+from swapper import swapper
+
+swapper.copy_and_replace('sgid.boundaries.counties')
+```
