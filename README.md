@@ -15,10 +15,19 @@
 
 ## Setup
 
+### Production
+
 1. `git clone https://github.com/agrc/swapper`
 1. `cd swapper`
-1. From within a virtual environment that has python 3.6+: `pip install .\ -U`
+1. From within a virtual environment that has python 3.6+ and arcpy: `pip install .\ -U`
 1. Set a `SWAPPER_CONNECTION_FILE_PATH` environment variable to the path to the `ConnectionFilesSGID` folder on the share.
+
+### Development
+
+1. Clone project.
+1. Update `.env` file to be the correct path to the share folder.
+1. From within a virtual environment that has python 3.6+ and arcpy: `pip install -e .\`
+1. `python -m swapper ...`
 
 ## Usage
 
