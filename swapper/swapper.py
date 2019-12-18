@@ -62,9 +62,11 @@ def copy_and_replace(fc):
             print(f'{fc} does not exist in Internal SGID')
 
             return None
+        
+    temp_exetension = '_temp'
 
     with arcpy.EnvManager(workspace=sgid10):
-        output_fc_sgid10 = f'{fc_name}_temp'
+        output_fc_sgid10 = f'{fc_name}{temp_extension}'
 
         if arcpy.Exists(output_fc_sgid10):
             print(f'{output_fc_sgid10} already exists in SGID10')
@@ -92,7 +94,7 @@ def copy_and_replace(fc):
             print(f'could not delete {sgid10}\\{fc_name}')
 
         try:
-            renamed_fc_sgid10 = output_fc_sgid10.replace('_temp', '')
+            renamed_fc_sgid10 = output_fc_sgid10[-len(temp_extension):]
             print(f'renamed {output_fc_sgid10}')
             arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
         except:
