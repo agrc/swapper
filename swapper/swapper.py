@@ -63,7 +63,7 @@ def copy_and_replace(fc):
 
             return None
         
-    temp_exetension = '_temp'
+    temp_extension = '_temp'
 
     with arcpy.EnvManager(workspace=sgid10):
         output_fc_sgid10 = f'{fc_name}{temp_extension}'
