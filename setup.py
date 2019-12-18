@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="swapper", # Replace with your own username
-    version="1.0.0",
+    version="1.0.1",
     author="Zach Beck",
     author_email="zbeck@utah.gov",
     description="Move data from one SDE database to another with minimal downtime",
