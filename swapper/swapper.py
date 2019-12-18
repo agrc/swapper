@@ -92,7 +92,7 @@ def copy_and_replace(fc):
             print(f'could not delete {sgid10}\\{fc_name}')
 
         try:
-            renamed_fc_sgid10 = output_fc_sgid10.strip('_temp')
+            renamed_fc_sgid10 = output_fc_sgid10.replace('_temp', '')
             print(f'renamed {output_fc_sgid10}')
             arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
         except:
