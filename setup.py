@@ -19,7 +19,9 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
         'docopt==0.6.*',
-        'python-dotenv==0.10.*'
+        'python-dotenv==0.10.*',
+        'pyodbc==4.0.*',
+        'xxhash==1.4.*'
     ],
     entry_points={"console_scripts": ["swapper = swapper.__main__:main"]}
 )
