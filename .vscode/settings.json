@@ -11,11 +11,14 @@
   ],
   "cSpell.words": [
     "SDESQL",
+    "STAs",
     "agol",
     "arcpy",
     "conda",
     "dotenv",
-    "getenv"
+    "getenv",
+    "globalid",
+    "xxhash"
   ],
-  "python.pythonPath": "/usr/local/Caskroom/miniconda/base/envs/cruft/bin/python"
+  "python.pythonPath": "C:\\Users\\agrc-arcgis\\AppData\\Local\\ESRI\\conda\\envs\\swapper\\python.exe"
 }

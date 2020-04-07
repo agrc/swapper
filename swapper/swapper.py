@@ -10,6 +10,8 @@ from textwrap import dedent
 from dotenv import load_dotenv
 
 import arcpy
+import pyodbc
+from xxhash import xxh64
 
 load_dotenv()
 
@@ -62,7 +64,7 @@ def copy_and_replace(fc):
             print(f'{fc} does not exist in Internal SGID')
 
             return None
-        
+
     temp_extension = '_temp'
 
     with arcpy.EnvManager(workspace=sgid10):
@@ -106,3 +108,101 @@ def copy_and_replace(fc):
                 arcpy.management.ChangePrivileges(renamed_fc_sgid10, user, 'GRANT', 'AS_IS')
         except:
             print(f'could not update privileges to {renamed_fc_sgid10}')
+
+
+def compare():
+    '''compares data sets between SGID and SGID10 and returns the tables that are different
+    '''
+    dbo_owner = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', 'SGID10_sde.sde')
+
+    if not os.path.exists(dbo_owner):
+        print(f'{dbo_owner} does not exist')
+
+        return []
+
+    tables_needing_update = []
+
+    internal_connection = pyodbc.connect(os.getenv('INTERNAL_DB_CONNECTION_STRING'))
+    internal_hashes = get_hashes(internal_connection.cursor())
+    sgid10_connection = pyodbc.connect(os.getenv('EXTERNAL_DB_CONNECTION_STRING'))
+    sgid10_hashes = get_hashes(sgid10_connection.cursor())
+
+    tables_missing_from_internal = set(sgid10_hashes) - set(internal_hashes)
+    if len(tables_missing_from_internal) > 0:
+        print(f'tables_missing_from_internal: {tables_missing_from_internal}')
+
+    tables_missing_from_sgid10 = set(internal_hashes) - set(sgid10_hashes)
+    if len(tables_missing_from_sgid10) > 0:
+        print(f'tables_missing_from_sgid10: {tables_missing_from_sgid10}')
+
+    for table in set(internal_hashes) & set(sgid10_hashes):
+        if internal_hashes[table] != sgid10_hashes[table]:
+            tables_needing_update.append(table)
+
+    return tables_needing_update
+
+
+def get_hashes(cursor):
+    table_field_map = discover_and_group_tables_with_fields(cursor)
+    table_hash_map = {}
+
+    for table in table_field_map:
+        fields = table_field_map[table]
+
+        hash = create_hash_from_table_rows(table, fields, cursor)
+
+        table_hash_map[table.replace('sgid10', 'sgid')] = hash
+
+    return table_hash_map
+
+
+def create_hash_from_table_rows(table, fields, cursor):
+    print(f'hashing: {table}')
+    query = f'SELECT {",".join(fields)} FROM {table} ORDER BY OBJECTID'
+    rows = cursor.execute(query).fetchall()
+
+    hashes = ''
+
+    for row in rows:
+        hash_me = [str(value) for value in row]
+
+        hash = xxh64(''.join(hash_me)).hexdigest()
+
+        hashes += hash
+
+    return xxh64(hashes).hexdigest()
+
+
+def discover_and_group_tables_with_fields(cursor):
+    skip_fields = ['gdb_geomattr_data', 'globalid', 'global_id', 'objectid_']
+
+    table_meta_query = '''SELECT LOWER(table_name)
+        FROM sde.sde_table_registry registry
+        WHERE NOT (table_name like 'SDE_%' OR table_name like 'GDB_%')'''
+
+    tables_rows = cursor.execute(table_meta_query).fetchall()
+    tables = [table for table, in tables_rows]
+    field_meta_query = f'''SELECT LOWER(table_catalog) as [db], LOWER(table_schema) as [schema], LOWER(table_name) as [table], LOWER(column_name) as [field], LOWER(data_type) as field_type
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name IN ({join_strings(tables)}) AND LOWER(column_name) NOT IN ({join_strings(skip_fields)})'''
+    field_meta = cursor.execute(field_meta_query).fetchall()
+
+    table_field_map = {}
+
+    for db, schema, table, field, field_type in field_meta:
+        full_table_name = f'{db}.{schema}.{table}'
+        if field_type == 'geometry':
+            field = f'{field}.STAsText() as {field}'
+
+        if full_table_name not in table_field_map:
+            table_field_map[full_table_name] = [field]
+
+            continue
+
+        table_field_map[full_table_name].append(field)
+
+    return table_field_map
+
+
+def join_strings(strings):
+    return "'" + "','".join(strings) + "'"
