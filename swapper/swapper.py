@@ -89,7 +89,7 @@ def copy_and_replace(fc):
 
         try:
             arcpy.management.Delete(fc_name)
-            print(f'deleted {sgid10_connection_file}\\{fc_name}')
+            print(f'deleted {sgid10}\\{fc_name}')
         except:
             print(f'could not delete {sgid10}\\{fc_name}')
 
