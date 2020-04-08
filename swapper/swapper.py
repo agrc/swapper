@@ -123,9 +123,9 @@ def compare():
 
     tables_needing_update = []
 
-    internal_connection = pyodbc.connect(getenv('INTERNAL_DB_CONNECTION_STRING'))
+    internal_connection = pyodbc.connect(getenv('SWAPPER_INTERNAL_DB_CONNECTION'))
     internal_hashes = get_hashes(internal_connection.cursor())
-    sgid10_connection = pyodbc.connect(getenv('EXTERNAL_DB_CONNECTION_STRING'))
+    sgid10_connection = pyodbc.connect(getenv('SWAPPER_EXTERNAL_DB_CONNECTION'))
     sgid10_hashes = get_hashes(sgid10_connection.cursor())
 
     tables_missing_from_internal = set(sgid10_hashes) - set(internal_hashes)
