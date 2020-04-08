@@ -4,22 +4,23 @@
 swapper.py
 Main module for swapper package.
 '''
-import os
+from os import getenv
+from pathlib import Path
 from textwrap import dedent
 
 from dotenv import load_dotenv
+from xxhash import xxh64
 
 import arcpy
 import pyodbc
-from xxhash import xxh64
 
 load_dotenv()
 
 
 def delete_locks(fc_owner, fc_name):
-    dbo_owner = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', 'SGID10_sde.sde')
+    dbo_owner = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde'
 
-    if not os.path.exists(dbo_owner):
+    if not Path(dbo_owner).exists():
         print(f'{dbo_owner} does not exist')
 
         return
@@ -50,13 +51,13 @@ def copy_and_replace(fc):
     owner = fc.split('.')[1].upper()
     fc_name = fc.split('.')[2].strip()
 
-    internal = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID_internal', f'SGID_{owner.title()}.sde')
-    sgid10 = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', f'SGID10_{owner.title()}.sde')
+    internal = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID_internal' / f'SGID_{owner.title()}.sde'
+    sgid10 = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / f'SGID10_{owner.title()}.sde'
 
-    if not os.path.exists(internal):
+    if not Path(internal).exists():
         print(f'{internal} does not exist')
 
-    if not os.path.exists(sgid10):
+    if not Path(sgid10).exists():
         print(f'{sgid10} does not exist')
 
     with arcpy.EnvManager(workspace=internal):
@@ -75,7 +76,7 @@ def copy_and_replace(fc):
 
             return None
 
-        input_fc_sgid = os.path.join(internal, fc_name)
+        input_fc_sgid = Path(internal) / fc_name
         print(input_fc_sgid)
 
         try:
@@ -113,18 +114,18 @@ def copy_and_replace(fc):
 def compare():
     '''compares data sets between SGID and SGID10 and returns the tables that are different
     '''
-    dbo_owner = os.path.join(os.getenv('SWAPPER_CONNECTION_FILE_PATH'), 'SGID10', 'SGID10_sde.sde')
+    dbo_owner = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde'
 
-    if not os.path.exists(dbo_owner):
+    if not Path(dbo_owner).exists():
         print(f'{dbo_owner} does not exist')
 
         return []
 
     tables_needing_update = []
 
-    internal_connection = pyodbc.connect(os.getenv('INTERNAL_DB_CONNECTION_STRING'))
+    internal_connection = pyodbc.connect(getenv('INTERNAL_DB_CONNECTION_STRING'))
     internal_hashes = get_hashes(internal_connection.cursor())
-    sgid10_connection = pyodbc.connect(os.getenv('EXTERNAL_DB_CONNECTION_STRING'))
+    sgid10_connection = pyodbc.connect(getenv('EXTERNAL_DB_CONNECTION_STRING'))
     sgid10_hashes = get_hashes(sgid10_connection.cursor())
 
     tables_missing_from_internal = set(sgid10_hashes) - set(internal_hashes)
