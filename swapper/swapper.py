@@ -72,9 +72,9 @@ def copy_and_replace(fc):
         output_fc_sgid10 = f'{fc_name}{temp_extension}'
 
         if arcpy.Exists(output_fc_sgid10):
-            print(f'{output_fc_sgid10} already exists in SGID10')
+            print(f'{output_fc_sgid10} already exists in SGID10, deleting...')
 
-            return None
+            arcpy.management.Delete(output_fc_sgid10)
 
         input_fc_sgid = str(Path(internal) / fc_name)
         print(input_fc_sgid)
