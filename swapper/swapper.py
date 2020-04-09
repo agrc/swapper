@@ -18,7 +18,7 @@ load_dotenv()
 
 
 def delete_locks(fc_owner, fc_name):
-    dbo_owner = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde'
+    dbo_owner = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde')
 
     if not Path(dbo_owner).exists():
         print(f'{dbo_owner} does not exist')
