@@ -77,7 +77,6 @@ def copy_and_replace(fc):
             arcpy.management.Delete(output_fc_sgid10)
 
         input_fc_sgid = str(Path(internal) / fc_name)
-        print(input_fc_sgid)
 
         try:
             arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
