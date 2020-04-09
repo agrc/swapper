@@ -83,32 +83,32 @@ def copy_and_replace(fc):
             arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
             print(f'copied {input_fc_sgid} to {output_fc_sgid10}')
         except:
-            print(f'could not copy to sgid10')
+            raise Exception(f'could not copy to sgid10')
 
         try:
             delete_locks(owner, fc_name)
         except:
-            print(f'could not delete table locks')
+            raise Exception(f'could not delete table locks')
 
         try:
             arcpy.management.Delete(fc_name)
             print(f'deleted {sgid10}\\{fc_name}')
         except:
-            print(f'could not delete {sgid10}\\{fc_name}')
+            raise Exception(f'could not delete {sgid10}\\{fc_name}')
 
         try:
             renamed_fc_sgid10 = output_fc_sgid10[:-len(temp_extension)]
             print(f'renamed {output_fc_sgid10}')
             arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
         except:
-            print(f'could not rename {output_fc_sgid10}')
+            raise Exception(f'could not rename {output_fc_sgid10}')
 
         try:
             user_list = ['agrc', 'SearchAPI']
             for user in user_list:
                 arcpy.management.ChangePrivileges(renamed_fc_sgid10, user, 'GRANT', 'AS_IS')
         except:
-            print(f'could not update privileges to {renamed_fc_sgid10}')
+            raise Exception(f'could not update privileges to {renamed_fc_sgid10}')
 
 
 def compare():
