@@ -51,8 +51,10 @@ def copy_and_replace(fc):
     owner = fc.split('.')[1].upper()
     fc_name = fc.split('.')[2].strip()
 
-    internal = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID_internal' / f'SGID_{owner.title()}.sde'
-    sgid10 = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / f'SGID10_{owner.title()}.sde'
+    internal = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID_internal' / f'SGID_{owner.title()}.sde')
+    print(internal)
+    sgid10 = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / f'SGID10_{owner.title()}.sde')
+    print(sgid10)
 
     if not Path(internal).exists():
         print(f'{internal} does not exist')
@@ -76,7 +78,7 @@ def copy_and_replace(fc):
 
             return None
 
-        input_fc_sgid = Path(internal) / fc_name
+        input_fc_sgid = str(Path(internal) / fc_name)
         print(input_fc_sgid)
 
         try:
