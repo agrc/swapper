@@ -78,8 +78,13 @@ def copy_and_replace(fc):
 
         input_fc_sgid = str(Path(internal) / fc_name)
 
+        describe = arcpy.da.Describe(input_fc_sgid)
+        is_table = describe['datasetType'] == 'Table'
         try:
-            arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
+            if is_table:
+                arcpy.management.CopyRows(input_fc_sgid, output_fc_sgid10)
+            else:
+                arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
             print(f'copied {input_fc_sgid} to {output_fc_sgid10}')
         except:
             raise Exception(f'could not copy to sgid10')
