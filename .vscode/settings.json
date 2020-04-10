@@ -18,6 +18,7 @@
     "dotenv",
     "getenv",
     "globalid",
+    "rowid",
     "xxhash"
   ],
   "python.pythonPath": "C:\\Users\\agrc-arcgis\\AppData\\Local\\ESRI\\conda\\envs\\swapper\\python.exe"

@@ -183,7 +183,8 @@ def discover_and_group_tables_with_fields(cursor):
 
     table_meta_query = '''SELECT LOWER(table_name)
         FROM sde.sde_table_registry registry
-        WHERE NOT (table_name like 'SDE_%' OR table_name like 'GDB_%') AND description IS NULL'''
+        WHERE NOT (table_name like 'SDE_%' OR table_name like 'GDB_%') AND description IS NULL AND rowid_column = 'OBJECTID'
+        '''
 
     tables_rows = cursor.execute(table_meta_query).fetchall()
     tables = [table for table, in tables_rows]
