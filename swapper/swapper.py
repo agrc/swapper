@@ -102,8 +102,8 @@ def copy_and_replace(fc):
 
         try:
             renamed_fc_sgid10 = output_fc_sgid10[:-len(temp_extension)]
-            print(f'renamed {output_fc_sgid10}')
             arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
+            print(f'renamed {output_fc_sgid10}')
         except:
             raise Exception(f'could not rename {output_fc_sgid10}')
 
@@ -181,16 +181,16 @@ def create_hash_from_table_rows(table, fields, cursor):
 def discover_and_group_tables_with_fields(cursor):
     skip_fields = ['gdb_geomattr_data', 'globalid', 'global_id', 'objectid_']
 
-    table_meta_query = '''SELECT LOWER(table_name)
+    table_meta_query = '''SELECT table_name
         FROM sde.sde_table_registry registry
         WHERE NOT (table_name like 'SDE_%' OR table_name like 'GDB_%') AND description IS NULL AND rowid_column = 'OBJECTID'
         '''
 
     tables_rows = cursor.execute(table_meta_query).fetchall()
     tables = [table for table, in tables_rows]
-    field_meta_query = f'''SELECT LOWER(table_catalog) as [db], LOWER(table_schema) as [schema], LOWER(table_name) as [table], LOWER(column_name) as [field], LOWER(data_type) as field_type
+    field_meta_query = f'''SELECT table_catalog as [db], table_schema as [schema], table_name as [table], column_name as [field], data_type as field_type
         FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE table_name IN ({join_strings(tables)}) AND LOWER(column_name) NOT IN ({join_strings(skip_fields)})'''
+        WHERE table_name IN ({join_strings(tables)}) AND column_name NOT IN ({join_strings(skip_fields)})'''
     field_meta = cursor.execute(field_meta_query).fetchall()
 
     table_field_map = {}
