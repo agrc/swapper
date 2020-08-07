@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # * coding: utf8 *
-'''
+"""
 swapper
 
 Usage:
@@ -20,8 +20,8 @@ Examples:
                                                                         SGID to SGID10.
     swapper compare --swap                                              Compares tables between SGID & SGID10 and swaps
                                                                         them if needed.
-    swapper copy_and_replace /path/to/fgdb.gdb/landownership /path/to/database.sde/sgid.cadastre.landownership /path/to/owner.sde
-'''
+    swapper copy_and_replace /fgdb.gdb/landownership /database.sde/sgid.cadastre.landownership /owner.sde
+"""
 from pathlib import Path
 
 from docopt import docopt
@@ -30,8 +30,8 @@ from .swapper import compare, copy_and_replace, swap_sgid_data
 
 
 def main():
-    '''Main entry point for program. Parse arguments and route to top level methods.
-    '''
+    """Main entry point for program. Parse arguments and route to top level methods.
+    """
     args = docopt(__doc__, version='1.1.0')
 
     def swap_tables(tables):
@@ -42,7 +42,10 @@ def main():
     if args['swap'] and args['<tables>']:
         swap_tables(args['<tables>'])
     elif args['<source_table_path>']:
-        copy_and_replace(Path(args['<source_table_path>']), Path(args['<destination_table_path>']), Path(args['<destination_workspace_owner>']))
+        copy_and_replace(
+            Path(args['<source_table_path>']), Path(args['<destination_table_path>']),
+            Path(args['<destination_workspace_owner>'])
+        )
     elif args['compare']:
         tables_needing_update = compare()
         print(f'tables_needing_update: {(tables_needing_update)}')
