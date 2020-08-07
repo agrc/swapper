@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # * coding: utf8 *
-'''
+"""
 swapper.py
 Main module for swapper package.
-'''
+"""
 from os import getenv
 from pathlib import Path
 from textwrap import dedent
@@ -20,6 +20,8 @@ load_dotenv()
 
 
 def delete_locks(fc_owner, fc_name, db_owner):
+    """delete locks for the specified table
+    """
     if not Path(db_owner).exists():
         print(f'{db_owner} does not exist')
 
@@ -48,25 +50,31 @@ def delete_locks(fc_owner, fc_name, db_owner):
 
 
 def swap_sgid_data(sgid_feature_class_name):
-    '''replaces sgid_feature_class_name in SGID10 with the SGID version
-    '''
+    """replaces sgid_feature_class_name in SGID10 with the SGID version
+    """
     owner = sgid_feature_class_name.split('.')[1].upper()
     table_name = sgid_feature_class_name.split('.')[2].strip()
 
-    sgid_path = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID_internal' / f'SGID_{owner.title()}.sde' / f'SGID.{owner}.{table_name}'
-    sgid10_path = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / f'SGID10_{owner.title()}.sde' / f'SGID10.{owner}.{table_name}'
+    sgid_path = Path(
+        getenv('SWAPPER_CONNECTION_FILE_PATH')
+    ) / 'SGID_internal' / f'SGID_{owner.title()}.sde' / f'SGID.{owner}.{table_name}'
+    sgid10_path = Path(
+        getenv('SWAPPER_CONNECTION_FILE_PATH')
+    ) / 'SGID10' / f'SGID10_{owner.title()}.sde' / f'SGID10.{owner}.{table_name}'
 
     db_owner = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde')
     copy_and_replace(sgid_path, sgid10_path, db_owner)
 
 
-def copy_and_replace(source_feature_class, destination_feature_class, db_owner_connection_file, view_users=['agrc', 'SearchAPI']):
-    '''replaces destination_feature_class with source_feature_class
+def copy_and_replace( #: pylint: disable=dangerous-default-value too-many-statements
+    source_feature_class, destination_feature_class, db_owner_connection_file, view_users=['agrc', 'SearchAPI']
+):
+    """replaces destination_feature_class with source_feature_class
     source_feature_class (pathlib.Path)
     destination_feature_class (pathlib.Path): must be an SDE feature class, and the name must be fully qualified
     db_owner_connection_file (pathlib.Path): path to connection file for db owner
     view_users: array of users that you want view access granted (default is for SGID10 database)
-    '''
+    """
     source_workspace = source_feature_class.parent
     if not source_workspace.exists():
         raise Exception(f'{source_workspace} does not exist')
@@ -111,9 +119,12 @@ def copy_and_replace(source_feature_class, destination_feature_class, db_owner_c
             raise Exception(f'could not copy to {destination_workspace}')
 
         try:
-            delete_locks(destination_feature_class_name.split('.')[1].upper(), destination_feature_class_name, db_owner_connection_file)
+            delete_locks(
+                destination_feature_class_name.split('.')[1].upper(), destination_feature_class_name,
+                db_owner_connection_file
+            )
         except:
-            raise Exception(f'could not delete table locks')
+            raise Exception('could not delete table locks')
 
         try:
             arcpy.management.Delete(destination_feature_class_name)
@@ -140,8 +151,8 @@ def copy_and_replace(source_feature_class, destination_feature_class, db_owner_c
 
 
 def compare():
-    '''compares data sets between SGID and SGID10 and returns the tables that are different
-    '''
+    """compares data sets between SGID and SGID10 and returns the tables that are different
+    """
     dbo_owner = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde'
 
     if not Path(dbo_owner).exists():
@@ -172,20 +183,24 @@ def compare():
 
 
 def get_hashes(cursor):
+    """get hashes for all tables
+    """
     table_field_map = discover_and_group_tables_with_fields(cursor)
     table_hash_map = {}
 
     for table in table_field_map:
         fields = table_field_map[table]
 
-        hash = create_hash_from_table_rows(table, fields, cursor)
+        table_hash = create_hash_from_table_rows(table, fields, cursor)
 
-        table_hash_map[table.replace('sgid10', 'sgid')] = hash
+        table_hash_map[table.replace('sgid10', 'sgid')] = table_hash
 
     return table_hash_map
 
 
 def create_hash_from_table_rows(table, fields, cursor):
+    """get hash string from tables
+    """
     print(f'hashing: {table}')
     query = f'SELECT {",".join(fields)} FROM {table} ORDER BY OBJECTID'
     rows = cursor.execute(query).fetchall()
@@ -195,32 +210,40 @@ def create_hash_from_table_rows(table, fields, cursor):
     for row in rows:
         hash_me = [str(value) for value in row]
 
-        hash = xxh64(''.join(hash_me)).hexdigest()
+        table_hash = xxh64(''.join(hash_me)).hexdigest()
 
-        hashes += hash
+        hashes += table_hash
 
     return xxh64(hashes).hexdigest()
 
 
 def discover_and_group_tables_with_fields(cursor):
+    """
+    get tables and fields
+    """
     skip_fields = ['gdb_geomattr_data', 'globalid', 'global_id', 'objectid_']
 
-    table_meta_query = '''SELECT table_name
+    table_meta_query = '''
+        SELECT table_name
         FROM sde.sde_table_registry registry
-        WHERE NOT (table_name like 'SDE_%' OR table_name like 'GDB_%') AND description IS NULL AND rowid_column = 'OBJECTID'
-        '''
+        WHERE NOT (table_name like 'SDE_%' OR table_name like 'GDB_%') AND
+            description IS NULL AND rowid_column = 'OBJECTID'
+    '''
 
     tables_rows = cursor.execute(table_meta_query).fetchall()
     tables = [table for table, in tables_rows]
-    field_meta_query = f'''SELECT table_catalog as [db], table_schema as [schema], table_name as [table], column_name as [field], data_type as field_type
+    field_meta_query = f'''
+        SELECT table_catalog as [db], table_schema as [schema], table_name as [table], column_name as [field],
+            data_type as field_type
         FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE table_name IN ({join_strings(tables)}) AND column_name NOT IN ({join_strings(skip_fields)})'''
+        WHERE table_name IN ({join_strings(tables)}) AND column_name NOT IN ({join_strings(skip_fields)})
+    '''
     field_meta = cursor.execute(field_meta_query).fetchall()
 
     table_field_map = {}
 
-    for db, schema, table, field, field_type in field_meta:
-        full_table_name = f'{db}.{schema}.{table}'
+    for database, schema, table, field, field_type in field_meta:
+        full_table_name = f'{database}.{schema}.{table}'
         if field_type == 'geometry':
             field = f'{field}.STAsText() as {field}'
 
@@ -235,4 +258,6 @@ def discover_and_group_tables_with_fields(cursor):
 
 
 def join_strings(strings):
-    return "'" + "','".join(strings) + "'"
+    """join table names for a SQL query
+    """
+    return '\'' + '\',\''.join(strings) + '\''
