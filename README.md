@@ -26,8 +26,9 @@
 
 1. Clone project.
 1. Update `.env` file to be the correct path to the share folder.
-1. From within a virtual environment that has python 3.6+ and arcpy: `pip install -e .\`
-1. `python -m swapper ...`
+1. From within a virtual environment that has python 3.6+ and arcpy: `pip install -e .[tests]`
+1. `swapper ...`
+1. `pytest`
 
 ## Usage
 
