@@ -122,17 +122,21 @@ def copy_and_replace(source_feature_class, destination_feature_class, db_owner_c
             raise Exception(f'could not delete {destination_feature_class}')
 
         try:
-            renamed_feature_class = temp_feature_class[:-len(TEMP_EXTENSION)]
-            arcpy.management.Rename(temp_feature_class, renamed_feature_class)
+            arcpy.management.Rename(temp_feature_class, destination_feature_class_name)
+
+            #: fix metadata title since it will still have the _temp suffix on it
+            metadata = arcpy.metadata.Metadata(destination_feature_class_name)
+            metadata.title = destination_feature_class_name
+            metadata.save()
             print(f'renamed {temp_feature_class}')
         except:
             raise Exception(f'could not rename {temp_feature_class}')
 
         try:
             for user in view_users:
-                arcpy.management.ChangePrivileges(renamed_feature_class, user, 'GRANT', 'AS_IS')
+                arcpy.management.ChangePrivileges(destination_feature_class_name, user, 'GRANT', 'AS_IS')
         except:
-            raise Exception(f'could not update privileges to {renamed_feature_class}')
+            raise Exception(f'could not update privileges to {destination_feature_class_name}')
 
 
 def compare():
