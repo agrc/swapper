@@ -14,18 +14,18 @@ from xxhash import xxh64
 import arcpy
 import pyodbc
 
+TEMP_EXTENSION = '_temp'
+
 load_dotenv()
 
 
-def delete_locks(fc_owner, fc_name):
-    dbo_owner = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde')
-
-    if not Path(dbo_owner).exists():
-        print(f'{dbo_owner} does not exist')
+def delete_locks(fc_owner, fc_name, db_owner):
+    if not Path(db_owner).exists():
+        print(f'{db_owner} does not exist')
 
         return
 
-    db_connect = arcpy.ArcSDESQLExecute(dbo_owner)
+    db_connect = arcpy.ArcSDESQLExecute(db_owner)
 
     sql = dedent(
         f'''SELECT * FROM sde.SDE_process_information
@@ -44,75 +44,95 @@ def delete_locks(fc_owner, fc_name):
 
     for user in db_return:
         print(f'deleted lock {user[0]}')
-        arcpy.DisconnectUser(dbo_owner, user[0])
+        arcpy.DisconnectUser(db_owner, user[0])
 
 
-def copy_and_replace(fc):
-    owner = fc.split('.')[1].upper()
-    fc_name = fc.split('.')[2].strip()
+def swap_sgid_data(sgid_feature_class_name):
+    '''replaces sgid_feature_class_name in SGID10 with the SGID version
+    '''
+    owner = sgid_feature_class_name.split('.')[1].upper()
+    table_name = sgid_feature_class_name.split('.')[2].strip()
 
-    internal = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID_internal' / f'SGID_{owner.title()}.sde')
-    sgid10 = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / f'SGID10_{owner.title()}.sde')
+    sgid_path = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID_internal' / f'SGID_{owner.title()}.sde' / f'SGID.{owner}.{table_name}'
+    sgid10_path = Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / f'SGID10_{owner.title()}.sde' / f'SGID10.{owner}.{table_name}'
 
-    if not Path(internal).exists():
-        print(f'{internal} does not exist')
+    db_owner = str(Path(getenv('SWAPPER_CONNECTION_FILE_PATH')) / 'SGID10' / 'SGID10_sde.sde')
+    copy_and_replace(sgid_path, sgid10_path, db_owner)
 
-    if not Path(sgid10).exists():
-        print(f'{sgid10} does not exist')
 
-    with arcpy.EnvManager(workspace=internal):
-        if not arcpy.Exists(fc):
-            print(f'{fc} does not exist in Internal SGID')
+def copy_and_replace(source_feature_class, destination_feature_class, db_owner_connection_file, view_users=['agrc', 'SearchAPI']):
+    '''replaces destination_feature_class with source_feature_class
+    source_feature_class (pathlib.Path)
+    destination_feature_class (pathlib.Path): must be an SDE feature class, and the name must be fully qualified
+    db_owner_connection_file (pathlib.Path): path to connection file for db owner
+    view_users: array of users that you want view access granted (default is for SGID10 database)
+    '''
+    source_workspace = source_feature_class.parent
+    if not source_workspace.exists():
+        raise Exception(f'{source_workspace} does not exist')
 
-            return None
+    destination_workspace = destination_feature_class.parent
+    if not destination_workspace.exists():
+        raise Exception(f'{destination_workspace} does not exist')
 
-    temp_extension = '_temp'
+    source_workspace = str(source_workspace)
+    source_feature_class_name = str(source_feature_class.name)
+    source_feature_class = str(source_feature_class)
 
-    with arcpy.EnvManager(workspace=sgid10):
-        output_fc_sgid10 = f'{fc_name}{temp_extension}'
+    destination_workspace = str(destination_workspace)
+    destination_feature_class_name = str(destination_feature_class.name)
+    destination_feature_class = str(destination_feature_class)
 
-        if arcpy.Exists(output_fc_sgid10):
-            print(f'{output_fc_sgid10} already exists in SGID10, deleting...')
+    def check_table_existence(workspace, table_name):
+        with arcpy.EnvManager(workspace=workspace):
+            if not arcpy.Exists(table_name):
+                raise Exception(f'{table_name} does not exist in {workspace}')
 
-            arcpy.management.Delete(output_fc_sgid10)
+    check_table_existence(source_workspace, source_feature_class_name)
+    check_table_existence(destination_workspace, destination_feature_class_name)
 
-        input_fc_sgid = str(Path(internal) / fc_name)
+    with arcpy.EnvManager(workspace=destination_workspace):
+        temp_feature_class = f'{destination_feature_class_name}{TEMP_EXTENSION}'
 
-        describe = arcpy.da.Describe(input_fc_sgid)
+        if arcpy.Exists(temp_feature_class):
+            print(f'{temp_feature_class} already exists in {destination_workspace}, deleting...')
+
+            arcpy.management.Delete(temp_feature_class)
+
+        describe = arcpy.da.Describe(source_feature_class)
         is_table = describe['datasetType'] == 'Table'
         try:
             if is_table:
-                arcpy.management.CopyRows(input_fc_sgid, output_fc_sgid10)
+                arcpy.management.CopyRows(source_feature_class, temp_feature_class)
             else:
-                arcpy.management.CopyFeatures(input_fc_sgid, output_fc_sgid10)
-            print(f'copied {input_fc_sgid} to {output_fc_sgid10}')
+                arcpy.management.CopyFeatures(source_feature_class, temp_feature_class)
+            print(f'copied {source_feature_class} to {temp_feature_class}')
         except:
-            raise Exception(f'could not copy to sgid10')
+            raise Exception(f'could not copy to {destination_workspace}')
 
         try:
-            delete_locks(owner, fc_name)
+            delete_locks(destination_feature_class_name.split('.')[1].upper(), destination_feature_class_name, db_owner_connection_file)
         except:
             raise Exception(f'could not delete table locks')
 
         try:
-            arcpy.management.Delete(fc_name)
-            print(f'deleted {sgid10}\\{fc_name}')
+            arcpy.management.Delete(destination_feature_class_name)
+            print(f'deleted {destination_feature_class}')
         except:
-            raise Exception(f'could not delete {sgid10}\\{fc_name}')
+            raise Exception(f'could not delete {destination_feature_class}')
 
         try:
-            renamed_fc_sgid10 = output_fc_sgid10[:-len(temp_extension)]
-            arcpy.management.Rename(output_fc_sgid10, renamed_fc_sgid10)
-            print(f'renamed {output_fc_sgid10}')
+            renamed_feature_class = temp_feature_class[:-len(TEMP_EXTENSION)]
+            arcpy.management.Rename(temp_feature_class, renamed_feature_class)
+            print(f'renamed {temp_feature_class}')
         except:
-            raise Exception(f'could not rename {output_fc_sgid10}')
+            raise Exception(f'could not rename {temp_feature_class}')
 
         try:
-            user_list = ['agrc', 'SearchAPI']
-            for user in user_list:
-                arcpy.management.ChangePrivileges(renamed_fc_sgid10, user, 'GRANT', 'AS_IS')
+            for user in view_users:
+                arcpy.management.ChangePrivileges(renamed_feature_class, user, 'GRANT', 'AS_IS')
         except:
-            raise Exception(f'could not update privileges to {renamed_fc_sgid10}')
+            raise Exception(f'could not update privileges to {renamed_feature_class}')
 
 
 def compare():
