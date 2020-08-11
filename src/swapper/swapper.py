@@ -21,6 +21,9 @@ load_dotenv()
 
 def delete_locks(fc_owner, fc_name, db_owner):
     """delete locks for the specified table
+    fc_owner (string): owner of feature class
+    fc_name (string): name of feature class (e.g. LandOwnership)
+    db_owner (string): path to connection file with owner creds
     """
     if not Path(db_owner).exists():
         print(f'{db_owner} does not exist')
@@ -30,10 +33,10 @@ def delete_locks(fc_owner, fc_name, db_owner):
     db_connect = arcpy.ArcSDESQLExecute(db_owner)
 
     sql = dedent(
-        f'''SELECT * FROM sde.SDE_process_information
-        WHERE SDE_ID IN(SELECT SDE_ID FROM sde.SDE_table_locks
-        WHERE registration_id = (SELECT registration_id FROM sde.SDE_table_registry
-        WHERE table_name = '{fc_name}' AND owner = UPPER('{fc_owner}')));
+        f'''SELECT * FROM SDE_process_information
+        WHERE SDE_ID IN(SELECT SDE_ID FROM SDE_table_locks
+        WHERE registration_id = (SELECT registration_id FROM SDE_table_registry
+        WHERE table_name = UPPER('{fc_name}') AND owner = UPPER('{fc_owner}')));
     '''
     )
 
@@ -120,8 +123,8 @@ def copy_and_replace( #: pylint: disable=dangerous-default-value too-many-statem
 
         try:
             delete_locks(
-                destination_feature_class_name.split('.')[1].upper(), destination_feature_class_name,
-                db_owner_connection_file
+                destination_feature_class_name.split('.')[1], destination_feature_class_name.split('.')[-1],
+                str(db_owner_connection_file)
             )
         except:
             raise Exception('could not delete table locks')
