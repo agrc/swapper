@@ -33,10 +33,10 @@ def delete_locks(fc_owner, fc_name, db_owner):
     db_connect = arcpy.ArcSDESQLExecute(db_owner)
 
     sql = dedent(
-        f'''SELECT * FROM SDE_process_information
-        WHERE SDE_ID IN(SELECT SDE_ID FROM SDE_table_locks
-        WHERE registration_id = (SELECT registration_id FROM SDE_table_registry
-        WHERE table_name = UPPER('{fc_name}') AND owner = UPPER('{fc_owner}')));
+        f'''SELECT * FROM sde.SDE_process_information
+        WHERE SDE_ID IN(SELECT SDE_ID FROM sde.SDE_table_locks
+        WHERE registration_id = (SELECT registration_id FROM sde.SDE_table_registry
+        WHERE UPPER(table_name) = UPPER('{fc_name}') AND UPPER(owner) = UPPER('{fc_owner}')));
     '''
     )
 
@@ -123,8 +123,8 @@ def copy_and_replace( #: pylint: disable=dangerous-default-value too-many-statem
 
         try:
             delete_locks(
-                destination_feature_class_name.split('.')[1], destination_feature_class_name.split('.')[-1],
-                str(db_owner_connection_file)
+                destination_feature_class_name.split('.')[1],
+                destination_feature_class_name.split('.')[-1], str(db_owner_connection_file)
             )
         except:
             raise Exception('could not delete table locks')
