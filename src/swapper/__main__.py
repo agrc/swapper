@@ -5,7 +5,7 @@ swapper
 
 Usage:
     swapper swap <tables>...
-    swapper copy_and_replace <source_table_path> <destination_table_path> <destination_workspace_owner>
+    swapper copy_and_replace <source_table_path> <destination_table_path> <destination_workspace_owner> <users>...
     swapper compare [--swap]
 
 Arguments:
@@ -14,6 +14,7 @@ Arguments:
     source_table_path:              A path to a source feature class or table
     destination_table_path:         A path to a destination feature class or table
     destination_workspace_owner:    A path to a connection file for the database owner (sde).
+    users:                          A space-separated list of users that you want view access granted to.
 
 Examples:
     swapper swap sgid.health.health_areas sgid.boundaries.counties      Swaps the health_areas and counties tables from
@@ -44,7 +45,7 @@ def main():
     elif args['<source_table_path>']:
         copy_and_replace(
             Path(args['<source_table_path>']), Path(args['<destination_table_path>']),
-            Path(args['<destination_workspace_owner>'])
+            Path(args['<destination_workspace_owner>']), args['<users>']
         )
     elif args['compare']:
         tables_needing_update = compare()
