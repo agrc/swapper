@@ -8,11 +8,10 @@ from os import getenv
 from pathlib import Path
 from textwrap import dedent
 
-from dotenv import load_dotenv
-from xxhash import xxh64
-
 import arcpy
 import pyodbc
+from dotenv import load_dotenv
+from xxhash import xxh64
 
 TEMP_EXTENSION = '_temp'
 
@@ -97,13 +96,21 @@ def copy_and_replace( #: pylint: disable=dangerous-default-value too-many-statem
     def check_table_existence(workspace, table_name):
         with arcpy.EnvManager(workspace=workspace):
             if not arcpy.Exists(table_name):
-                raise Exception(f'{table_name} does not exist in {workspace}')
+                raise FileNotFoundError(f'{table_name} does not exist in {workspace}')
 
     check_table_existence(source_workspace, source_feature_class_name)
-    check_table_existence(destination_workspace, destination_feature_class_name)
+
+    empty_destination = False
+    try:
+        check_table_existence(destination_workspace, destination_feature_class_name)
+    except FileNotFoundError:
+        empty_destination = True
 
     with arcpy.EnvManager(workspace=destination_workspace):
-        temp_feature_class = f'{destination_feature_class_name}{TEMP_EXTENSION}'
+        if empty_destination:
+            temp_feature_class = destination_feature_class
+        else:
+            temp_feature_class = f'{destination_feature_class_name}{TEMP_EXTENSION}'
 
         if arcpy.Exists(temp_feature_class):
             print(f'{temp_feature_class} already exists in {destination_workspace}, deleting...')
@@ -129,22 +136,23 @@ def copy_and_replace( #: pylint: disable=dangerous-default-value too-many-statem
         except:
             raise Exception('could not delete table locks')
 
-        try:
-            arcpy.management.Delete(destination_feature_class_name)
-            print(f'deleted {destination_feature_class}')
-        except:
-            raise Exception(f'could not delete {destination_feature_class}')
+        if not empty_destination:
+            try:
+                arcpy.management.Delete(destination_feature_class_name)
+                print(f'deleted {destination_feature_class}')
+            except:
+                raise Exception(f'could not delete {destination_feature_class}')
 
-        try:
-            arcpy.management.Rename(temp_feature_class, destination_feature_class_name)
+            try:
+                arcpy.management.Rename(temp_feature_class, destination_feature_class_name)
 
-            #: fix metadata title since it will still have the _temp suffix on it
-            metadata = arcpy.metadata.Metadata(destination_feature_class_name)
-            metadata.title = destination_feature_class_name
-            metadata.save()
-            print(f'renamed {temp_feature_class}')
-        except:
-            raise Exception(f'could not rename {temp_feature_class}')
+                #: fix metadata title since it will still have the _temp suffix on it
+                metadata = arcpy.metadata.Metadata(destination_feature_class_name)
+                metadata.title = destination_feature_class_name
+                metadata.save()
+                print(f'renamed {temp_feature_class}')
+            except:
+                raise Exception(f'could not rename {temp_feature_class}')
 
         try:
             for user in view_users:
