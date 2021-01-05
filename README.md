@@ -1,5 +1,7 @@
 # swapper
 
+## NOTE: This project has been decprecated since SGID10 is no longer around.
+
 ## This tool will
 
 1. Take a sgid-internal feature class name (ie SGID.OWNER.FeatureClass) as input.
