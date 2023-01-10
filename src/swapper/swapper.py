@@ -69,7 +69,7 @@ def swap_sgid_data(sgid_feature_class_name):
 
 
 def copy_and_replace( #: pylint: disable=dangerous-default-value too-many-statements
-    source_feature_class, destination_feature_class, db_owner_connection_file, view_users=['agrc', 'SearchAPI']
+    source_feature_class, destination_feature_class, db_owner_connection_file, view_users=['internal']
 ):
     """replaces destination_feature_class with source_feature_class
     source_feature_class (pathlib.Path)
