@@ -35,7 +35,7 @@ setup(
     install_requires=[
         'docopt==0.6.*',
         'python-dotenv==0.10.*',
-        'pyodbc==4.0.*',
+        'pyodbc>=4.0,<5.1',
         'xxhash>=3.*'
     ],
     extras_require={
