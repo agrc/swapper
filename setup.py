@@ -34,7 +34,7 @@ setup(
     keywords=['gis'],
     install_requires=[
         'docopt==0.6.*',
-        'python-dotenv==0.10.*',
+        'python-dotenv>=0.10,<1.1',
         'pyodbc==4.0.*',
         'xxhash>=3.*'
     ],
