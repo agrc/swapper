@@ -12,3 +12,8 @@ updates:
     schedule:
       interval: monthly
     versioning-strategy: increase-if-necessary
+    groups:
+      safe-dependencies:
+        update-types: ['minor', 'patch']
+      major-dependencies:
+        update-types: ['major']
