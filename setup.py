@@ -34,20 +34,20 @@ setup(
     keywords=['gis'],
     install_requires=[
         'docopt==0.6.*',
-        'python-dotenv==0.10.*',
-        'pyodbc==4.0.*',
+        'python-dotenv>=0.10,<1.1',
+        'pyodbc>=4.0,<5.1',
         'xxhash>=3.*'
     ],
     extras_require={
         'tests': [
             'pylint-quotes==0.2.*',
-            'pylint==2.5.*',
-            'pytest-cov==2.9.*',
+            'pylint>=2.5,<3.1',
+            'pytest-cov>=2.9,<4.2',
             'pytest-instafail>=0.4,<0.6',
-            'pytest-isort==1.0.*',
+            'pytest-isort>=1.0,<3.2',
             'pytest-pylint>=0.17,<0.22',
             'pytest-watch==4.2.*',
-            'pytest==5.4.*',
+            'pytest>=5.4,<7.5',
             'yapf>=0.30,<0.41',
         ]
     },
