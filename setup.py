@@ -47,7 +47,7 @@ setup(
             'pytest-isort>=1.0,<3.2',
             'pytest-pylint>=0.17,<0.22',
             'pytest-watch==4.2.*',
-            'pytest>=5.4,<7.5',
+            'pytest>=5.4,<8.1',
             'yapf>=0.30,<0.41',
         ]
     },
