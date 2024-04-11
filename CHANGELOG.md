@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/agrc/swapper/compare/v1.2.1...v1.2.2) (2024-04-11)
+
+
+### 🐛 Bug Fixes
+
+* correct readme casing ([ed851e8](https://github.com/agrc/swapper/commit/ed851e8ae67f301489898f689df9501ae4a671e6))
+
 ## [1.2.1](https://github.com/agrc/swapper/compare/v1.2.0...v1.2.1) (2024-04-11)
 
 
