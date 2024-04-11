@@ -31,29 +31,30 @@ from .swapper import compare, copy_and_replace, swap_sgid_data
 
 
 def main():
-    """Main entry point for program. Parse arguments and route to top level methods.
-    """
-    args = docopt(__doc__, version='1.1.0')
+    """Main entry point for program. Parse arguments and route to top level methods."""
+    args = docopt(__doc__, version="1.1.0")
 
     def swap_tables(tables):
         for table in tables:
-            print(f'updating table: {table}')
+            print(f"updating table: {table}")
             swap_sgid_data(table)
 
-    if args['swap'] and args['<tables>']:
-        swap_tables(args['<tables>'])
-    elif args['<source_table_path>']:
+    if args["swap"] and args["<tables>"]:
+        swap_tables(args["<tables>"])
+    elif args["<source_table_path>"]:
         copy_and_replace(
-            Path(args['<source_table_path>']), Path(args['<destination_table_path>']),
-            Path(args['<destination_workspace_owner>']), args['<users>']
+            Path(args["<source_table_path>"]),
+            Path(args["<destination_table_path>"]),
+            Path(args["<destination_workspace_owner>"]),
+            args["<users>"],
         )
-    elif args['compare']:
+    elif args["compare"]:
         tables_needing_update = compare()
-        print(f'tables_needing_update: {(tables_needing_update)}')
+        print(f"tables_needing_update: {(tables_needing_update)}")
 
-        if args['--swap']:
+        if args["--swap"]:
             swap_tables(tables_needing_update)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
