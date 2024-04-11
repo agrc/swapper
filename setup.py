@@ -14,7 +14,7 @@ setup(
     version="1.2.1",
     license="MIT",
     description="Move data from one SDE database to another with minimal downtime",
-    long_description=(Path(__file__).parent / "readme.md").read_text(),
+    long_description=(Path(__file__).parent / "README.md").read_text(),
     long_description_content_type="text/markdown",
     author="UGRC",
     author_email="ugrc-developers@utah.gov",
