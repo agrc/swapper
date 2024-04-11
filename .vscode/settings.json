@@ -1,33 +1,64 @@
 {
   "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
-  "python.linting.flake8Enabled": false,
   "python.linting.pycodestyleEnabled": false,
-  "python.formatting.provider": "yapf",
-  "python.formatting.yapfPath": "yapf",
-  "python.formatting.yapfArgs": ["--style", "${workspaceRoot}/setup.cfg"],
+  "python.formatting.provider": "none",
   "cSpell.words": [
     "AGRC",
-    "SDESQL",
-    "STAs",
+    "arcgis",
+    "arcpy",
+    "cadastre",
+    "Codecov",
+    "docopt",
     "dotenv",
+    "fgdb",
+    "finditer",
+    "geomattr",
     "getenv",
     "globalid",
     "instafail",
     "isort",
+    "mapserv",
+    "metatable",
+    "mssql",
+    "ODBC",
+    "oidc",
+    "opensgid",
+    "pgsql",
+    "psycopg",
+    "pygsheets",
     "pylint",
+    "pyodbc",
     "pytest",
+    "rindex",
     "rowid",
-    "xxhash",
-    "yapf"
+    "SDESQL",
+    "sgid",
+    "STAs",
+    "UGRC",
+    "venv",
+    "worknote",
+    "xxhash"
   ],
   "editor.formatOnSave": true,
-  "editor.rulers": [120],
-  "files.insertFinalNewline": true,
-  "coverage-gutters.showGutterCoverage": true,
+  "editor.rulers": [
+    120
+  ],
+  "coverage-gutters.showGutterCoverage": false,
   "coverage-gutters.showLineCoverage": true,
   "coverage-gutters.showRulerCoverage": false,
   "coverage-gutters.highlightdark": "rgb(61, 153, 112, .05)",
   "coverage-gutters.noHighlightDark": "rgb(255, 65, 54, .05)",
-  "coverage-gutters.partialHighlightDark": "rgb(255, 133, 27, .05)"
+  "coverage-gutters.partialHighlightDark": "rgb(255, 133, 27, .05)",
+  "python.languageServer": "Pylance",
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "--no-cov"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  }
 }

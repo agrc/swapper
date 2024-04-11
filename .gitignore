@@ -32,4 +32,6 @@ cov.xml
 
 LocalConnectionFiles
 .env
+.venv
+.ruff_cache
 .coverage
