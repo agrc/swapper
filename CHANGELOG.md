@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/agrc/swapper/compare/v1.1.1...v1.2.0) (2024-04-11)
+
+
+### 🚀 Features
+
+* rename package for pypi ([43b5b25](https://github.com/agrc/swapper/commit/43b5b25aa757fcad4d9e72514622f446860ff63e))
+
 ## [1.1.1](https://github.com/agrc/swapper/compare/v1.1.0...v1.1.1) (2024-04-11)
 
 

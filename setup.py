@@ -12,7 +12,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="ugrc-swapper",
-    version="1.1.1",
+    version="1.2.0",
     license="MIT",
     description="Move data from one SDE database to another with minimal downtime",
     author="Zach Beck",
