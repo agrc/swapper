@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="ugrc-swapper",
-    version="1.2.0",
+    version="1.2.1",
     license="MIT",
     description="Move data from one SDE database to another with minimal downtime",
     long_description=(Path(__file__).parent / "readme.md").read_text(),
