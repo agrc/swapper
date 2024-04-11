@@ -11,7 +11,7 @@ from os.path import basename, splitext
 from setuptools import find_packages, setup
 
 setup(
-    name="swapper",
+    name="ugrc-swapper",
     version="1.1.1",
     license="MIT",
     description="Move data from one SDE database to another with minimal downtime",
