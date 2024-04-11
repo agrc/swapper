@@ -12,7 +12,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="swapper",
-    version="1.1.0",
+    version="1.1.1",
     license="MIT",
     description="Move data from one SDE database to another with minimal downtime",
     author="Zach Beck",
