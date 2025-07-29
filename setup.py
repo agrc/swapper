@@ -47,7 +47,7 @@ setup(
             "pytest-ruff==0.*",
             "pytest-watch==4.*",
             "pytest==8.*",
-            "black==24.*",
+            "black>=24,<26",
             "ruff==0.*",
         ]
     },
