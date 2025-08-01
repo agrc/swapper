@@ -10,7 +10,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 setup(
-    name="ugrc_swapper",
+    name="ugrc-swapper",
     version="1.2.3",
     license="MIT",
     description="Move data from one SDE database to another with minimal downtime",
@@ -51,6 +51,8 @@ setup(
             "ruff==0.*",
         ]
     },
-    setup_requires=[],
+    setup_requires=[
+        "pytest-runner",
+    ],
     entry_points={"console_scripts": ["swapper = swapper.__main__:main"]},
 )
