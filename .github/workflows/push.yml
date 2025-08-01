@@ -55,11 +55,11 @@ jobs:
           cache: pip
           cache-dependency-path: setup.py
 
-      - name: 🛞 Install wheel
-        run: pip install wheel
+      - name: 🛞 Install build
+        run: pip install build
 
       - name: 📦 Build package
-        run: python setup.py sdist bdist_wheel
+        run: python -m build
 
       - name: 🚀 Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
