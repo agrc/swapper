@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.3](https://github.com/agrc/swapper/compare/v1.2.2...v1.2.3) (2025-08-01)
+
+
+### Dependencies
+
+* **dev:** update black requirement from ==24.* to &gt;=24,&lt;26 ([f85747d](https://github.com/agrc/swapper/commit/f85747d97d7163dd2a6a18b614ad39261e7e649e))
+* **dev:** update pytest-cov requirement from ==5.* to &gt;=5,&lt;7 ([0b4be08](https://github.com/agrc/swapper/commit/0b4be08c46e99ec2afc1651b4a1c623ab8d6e580))
+
 ## [1.2.2](https://github.com/agrc/swapper/compare/v1.2.1...v1.2.2) (2024-04-11)
 
 
