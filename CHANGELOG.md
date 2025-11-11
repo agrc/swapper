@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/agrc/swapper/compare/v1.2.3...v1.2.4) (2025-11-11)
+
+
+### Dependencies
+
+* **dev:** update pytest-cov requirement from &lt;7,&gt;=5 to &gt;=5,&lt;8 ([aa6e837](https://github.com/agrc/swapper/commit/aa6e8372c3ca59551c6ac58981d59c768991ba70))
+
 ## [1.2.3](https://github.com/agrc/swapper/compare/v1.2.2...v1.2.3) (2025-08-01)
 
 
