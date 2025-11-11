@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       ci-dependencies:
         dependency-type: production
@@ -11,10 +11,11 @@ updates:
       default-days: 10
       exclude:
         - agrc/*
+
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     versioning-strategy: increase-if-necessary
     groups:
       safe-dependencies:
